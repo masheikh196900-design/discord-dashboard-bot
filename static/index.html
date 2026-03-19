@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Discord Dashboard</title>
+  <style>
+    body {
+      background: #0f172a;
+      color: white;
+      font-family: Arial;
+      padding: 20px;
+    }
+    .box {
+      background: #1e293b;
+      padding: 20px;
+      margin: 10px 0;
+      border-radius: 10px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px 0;
+      width: 100%;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background: #22c55e;
+      color: white;
+      cursor: pointer;
+    }
+    button.stop {
+      background: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+<h1>🚀 Discord Message Dashboard</h1>
+
+<div class="box">
+  <h3>Create Task</h3>
+  <input id="name" placeholder="Task name">
+  <input id="channel" placeholder="Channel ID">
+  <input id="message" placeholder="Message">
+  <input id="delay" placeholder="Delay (seconds)">
+  <button onclick="startTask()">Start Task</button>
+</div>
+
+<div class="box">
+  <h3>Active Tasks</h3>
+  <pre id="tasks"></pre>
+</div>
+
+<script>
+async function startTask() {
+  await fetch("/start", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      name: document.getElementById("name").value,
+      channel_id: parseInt(document.getElementById("channel").value),
+      message: document.getElementById("message").value,
+      delay: parseInt(document.getElementById("delay").value)
+    })
+  });
+  loadTasks();
+}
+
+async function loadTasks() {
+  let res = await fetch("/tasks");
+  let data = await res.json();
+  document.getElementById("tasks").innerText = JSON.stringify(data, null, 2);
+}
+
+setInterval(loadTasks, 2000);
+</script>
+
+</body>
+</html>
